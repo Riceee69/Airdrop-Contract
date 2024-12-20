@@ -31,14 +31,14 @@ This project implements a Merkle-based airdrop mechanism with features for white
 
 ---
 
-## Steps to Interact(Personal Notes)
+## Steps to Interact(Personal Notes, the CLI commands are just a layout to remember the usage)
 
 1. **Start Local Blockchain**
    ```bash
    anvil
    ```
 
-2. **Deploy the Contract**
+2. **Deploy the Contracts (token and airdrop)**
    ```bash
    forge script [deploy_script] --rpc-url localhost --private-key [key] --broadcast
    ```
