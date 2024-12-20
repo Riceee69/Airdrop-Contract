@@ -1,66 +1,69 @@
-## Foundry
+# Merkle-Based Airdrop
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+## Overview
 
-Foundry consists of:
+This project implements a Merkle-based airdrop mechanism with features for whitelist management, efficient proof generation, and secure claim processing using cryptographic standards.
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+---
 
-## Documentation
+## Features
 
-https://book.getfoundry.sh/
+### 1. **Custom Input JSON Generator Script (GenerateInput.s.sol)**
+- A custom-made tool to generate the input format required for the Merkle airdrop.
+- Takes a list of wallet addresses in the whitelist and formats it into a compatible JSON structure.
 
-## Usage
+### 2. **Merkle Tree and Proofs Generation**
+- Utilizes the [dmfxyz/murky](https://github.com/dmfxyz/murky) library to:
+  - Generate the Merkle tree using **MakeMerkle.s.sol**
+  - Compute Merkle proofs for whitelisted addresses efficiently.
 
-### Build
+### 3. **EIP-712 Standard for Signatures**
+- Implements the EIP-712 standard to create structured and secure signatures for claim verification.
 
-```shell
-$ forge build
-```
+---
 
-### Test
+## Smart Contract Interaction
 
-```shell
-$ forge test
-```
+### **Interact.s.sol**
+- Contains the script to interact with the deployed Merkle airdrop contract.
+- Uses `cast` to sign messages after deploying the contract locally using Anvil.
+- The signature is split into `v`, `r`, and `s` components using inline assembly for claim validation.
 
-### Format
+---
 
-```shell
-$ forge fmt
-```
+## Steps to Interact(Personal Notes)
 
-### Gas Snapshots
+1. **Start Local Blockchain**
+   ```bash
+   anvil
+   ```
 
-```shell
-$ forge snapshot
-```
+2. **Deploy the Contract**
+   ```bash
+   forge script [deploy_script] --rpc-url localhost --private-key [key] --broadcast
+   ```
+   *(Use `--broadcast` to deploy, or omit it to run a simulation.)*
 
-### Anvil
+3. **Generate Message Hash**
+   ```bash
+   cast call [Address(MerkleAirdrop)] ["getMessageHash(address, uint256)"] [parameters]
+   ```
 
-```shell
-$ anvil
-```
+4. **Sign the Message**
+   ```bash
+   cast wallet sign --no-hash [message_hash] --private-key
+   ```
+   *(Ensure the hash is provided without the `0x` prefix.)*
 
-### Deploy
+5. **Run Interaction Script**
+   ```bash
+   forge script [Interact_Script]
+   ```
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
+---
 
-### Cast
+## Disclaimer
 
-```shell
-$ cast <subcommand>
-```
+This implementation is a proof-of-concept. Please review the code thoroughly and adapt it as necessary for production environments.
 
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+---
